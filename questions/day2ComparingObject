@@ -23,7 +23,7 @@ const profileCp2 = {
 // when you compare two object for diffrent reference(diffrent space in heap memory) it gives you false.
 //when two object share same reference in heap memory it gies you true.
 const compareObject = (obj1, obj2) => {
-  return Object.values(obj1) === Object.values(obj2);
+return Object.entries(obj1).toString() === Object.entries(obj2).toString();
 };
 console.log(compareObject(profile, profileCp)); //true
 
