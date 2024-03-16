@@ -2,13 +2,13 @@ const arr = [1, 2, 3, 4, 5, 6];
 
 // For loop
 for (let i = 0; i < arr.length; i++) {
-  console.log(i, arr[i]);
+  // console.log(i, arr[i]);
 }
 
 console.log("Statrting ForOf");
 // For of
 for (let item of arr) {
-  console.log(item);
+  // console.log(item);
 }
 // Map
 
@@ -20,8 +20,8 @@ const resultMap = arr.map((value, index, array) => {
 
 const resultMap2 = arr.map((value) => value * 100);
 
-console.log("arr: ", arr);
-console.log("Result map: ", resultMap, resultMap2);
+// console.log("arr: ", arr);
+// console.log("Result map: ", resultMap, resultMap2);
 
 
 
@@ -29,9 +29,19 @@ console.log("Result map: ", resultMap, resultMap2);
 
 
 const resultForEach = arr.forEach((value, index, array) => {
-  console.log("forEach",{ value, index, array });
+  // console.log("forEach",{ value, index, array });
   return value * 2;
 });
 
-console.log("Result forEach", resultForEach);
+// console.log("Result forEach", resultForEach);
 
+//Filter 
+const number=arr.filter((num)=> num >=1)
+console.log(number);
+
+//Reduce
+const arr1=[1,2,3,4]
+const initalValue=0
+const numbers=arr1.reduce((acc, currVal)=>  acc+currVal,initalValue)
+
+console.log(`Reduce value ${numbers}`);
