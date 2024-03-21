@@ -21,7 +21,7 @@ fastify.get("/todos", async (request, reply) => {
 fastify.get("/todos/:id", async (request, reply) => {
   const id  = request.params.id;
   console.log("id found", typeof id);
-  const todo = todos.find((todo) => todo.id === id);
+  const todo = todos.find((todo) => todo.id === parseInt(id));
   console.log("id found", typeof todo);
   if (!todo) {
     reply.code(404).send({ message: "Id not found" });
