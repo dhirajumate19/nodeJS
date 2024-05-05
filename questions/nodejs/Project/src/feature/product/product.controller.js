@@ -11,3 +11,30 @@ export const addProducts = async (req, res) => {
     res.status(500).send({ error: "Internal Error " + error });
   }
 };
+
+export const getProductCategoryWise = async (req, res) => {
+  try {
+    const category = req.params.category;
+    const response = await productModel.aggregate([
+      { $match: { category: category } },
+      {
+        $sort: {
+          totalPrice: 1,
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          name: "$name",
+          price: "$price",
+          description: "$description",
+          category: "$category",
+        },
+      },
+    ]);
+    res.status(200).send({ Products: response, message: "Your product" });
+  } catch (error) {
+    console.log("error" + error);
+    res.status(500).send("Something went wrong " + error);
+  }
+};
