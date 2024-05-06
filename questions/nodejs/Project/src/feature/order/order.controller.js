@@ -58,11 +58,11 @@ export const createOrder = async (req, res) => {
 //get order detail
 export const getOrder = async (req, res) => {
   try {
-    const orderID = req.params.orderid;
-
+    // const orderID = req.params.orderid;
+    const orderId = new mongoose.Types.ObjectId(req.params.orderid);
     const response = await orderModel.aggregate([
       {
-        $match: { _id: new mongoose.Types.ObjectId(orderID) },
+        $match: { _id: orderId },
       },
       {
         $lookup: {
@@ -74,10 +74,10 @@ export const getOrder = async (req, res) => {
       },
       {
         $lookup: {
-          from: "transction",
+          from: "transctions",
           as: "transctiondata",
           localField: "transctionId",
-          foreignField: "orderId",
+          foreignField: "_id",
         },
       },
       {
