@@ -1,13 +1,55 @@
 import mongoose from "mongoose";
 const ObjectId = mongoose.Types.ObjectId;
 import { orderModel } from "./order.model.js";
+import { cartModel } from "../cart/cart.model.js";
 
 //place order for user
 export const createOrder = async (req, res) => {
   try {
-    const { userId, products, totalPrice } = req.body;
-    const newOrder = new orderModel({ userId, products, totalPrice });
+    const { userId, products, transctionId, refTransctionId } = req.body;
+
+    if (!refTransctionId) {
+      return res.status(400).send({
+        message:
+          "Issues with your reference trasnction! can't place your order at this momemt  ",
+      });
+    }
+    const productIds = products.map((item) => item.productId);
+
+    const responseId = orderModel.aggregate([
+      {
+        $match: {
+          _id: { $in: productIds.map((id) => new mongoose.Types.ObjectId(id)) },
+        },
+      },
+    ]);
+    if (!responseId) {
+      return res.status(400).send({
+        message: "We can't place your order now as product is out of stock",
+      });
+    }
+    //total price calculation
+    const totalPrice = products.reduce(
+      (acc, item) => acc + item.productPrice,
+      0
+    );
+
+    const newOrder = new orderModel({
+      userId,
+      products,
+      totalPrice,
+      transctionId,
+      refTransctionId,
+    });
     const response = await newOrder.save();
+    if (!response) {
+      return res.send({
+        message:
+          "We can't place your order at this moment as we're facing few issues. Please try after some time.",
+      });
+    }
+    //clear cart
+    await cartModel.deleteOne({ userId });
     res.status(201).send({ response, message: "Order Create" });
   } catch (error) {
     console.log(error);
@@ -17,7 +59,7 @@ export const createOrder = async (req, res) => {
 export const getOrder = async (req, res) => {
   try {
     const orderID = req.params.orderid;
-    console.log("id", orderID);
+
     const response = await orderModel.aggregate([
       {
         $match: { _id: new mongoose.Types.ObjectId(orderID) },
@@ -31,11 +73,20 @@ export const getOrder = async (req, res) => {
         },
       },
       {
+        $lookup: {
+          from: "transction",
+          as: "transctiondata",
+          localField: "transctionId",
+          foreignField: "orderId",
+        },
+      },
+      {
         $project: {
           _id: 0,
           products: 1,
           totalPrice: 1,
           userDetails: { $first: "$userDetails" },
+          transctiondata: { $first: "$transctiondata" },
         },
       },
     ]);

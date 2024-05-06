@@ -4,14 +4,23 @@ const orderSchema = mongoose.Schema([
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "user",
       required: true,
     },
+    transctionId: { type: mongoose.Schema.Types.ObjectId, required: false },
     products: [
       {
         productId: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "Product",
+          ref: "product",
+          required: true,
+        },
+        productName: {
+          type: mongoose.Schema.Types.String,
+          required: true,
+        },
+        productPrice: {
+          type: mongoose.Schema.Types.Number,
           required: true,
         },
         quantity: {
@@ -22,14 +31,13 @@ const orderSchema = mongoose.Schema([
     ],
     totalPrice: {
       type: Number,
-      required: true,
+      required: false,
     },
     status: {
       type: String,
       enum: ["pending", "processing", "shipped", "delivered"],
       default: "pending",
     },
-    // Other order-related fields
   },
 ]);
 
