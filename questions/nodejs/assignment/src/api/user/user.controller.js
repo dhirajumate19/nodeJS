@@ -5,10 +5,10 @@ import { failedResponse, successReponse } from "../utils/response/reponse.js";
 export const getUser = async (req, res) => {
   try {
     console.log("user", req.params.username);
-    const userName = req.params.username;
+    const username = req.params.username;
     const alreadyUser = await userModel.aggregate([
       {
-        $match: { username: userName },
+        $match: { username: username },
       },
       {
         $project: {
@@ -21,7 +21,7 @@ export const getUser = async (req, res) => {
     // return alreadyUser.length>0 ? res
     //     .status(200)
     //     .send(successReponse(alreadyUser, "Already user data in DB")): const req=await axios.get(
-    //             `https://api.github.com/users/${userName}`
+    //             `https://api.github.com/users/${username}`
     //           );
     if (alreadyUser.length > 0) {
       return res
@@ -29,21 +29,21 @@ export const getUser = async (req, res) => {
         .send(successReponse(alreadyUser, "Already user data in DB"));
     } else {
       const fetchReq = await axios.get(
-        `https://api.github.com/users/${userName}`
+        `https://api.github.com/users/${username}`
       );
       console.log("req", fetchReq);
       if (fetchReq.status !== 200) {
         return res.status(400).send(failedResponse(400, "Data Not found"));
       } else {
         const newData = new userModel({
-          username: userName,
+          username,
           data: fetchReq.data,
         });
         const response = await newData.save();
         res
           .status(201)
           .send(
-            successReponse(response, `Data Stored in DB with ${userName} `)
+            successReponse(response, `Data Stored in DB with ${username} `)
           );
       }
     }
