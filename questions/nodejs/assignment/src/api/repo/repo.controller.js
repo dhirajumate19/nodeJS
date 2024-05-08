@@ -4,8 +4,10 @@ import { reposModel } from "./repo.model.js";
 
 export const getRepo = async (req, res) => {
   try {
+    //load params
     const username = req.params.username;
 
+    // find username macthes with params with projection username and data
     const alreadyUser = await reposModel.aggregate([
       {
         $match: { username: username },
@@ -26,6 +28,13 @@ export const getRepo = async (req, res) => {
       const fetchReq = await axios.get(
         `https://api.github.com/users/${username}/repos`
       );
+
+      //check username length if gte 0 then return exsting data
+      //  else fetch github repo and stored
+      // then check  fetch data equal to 200 status
+      // macthes to 200 return with data not foound
+      // else store data into model and save into db
+      // return new record with username and Data
 
       if (fetchReq.status !== 200) {
         return res.status(400).send(failedResponse(400, "Data Not found"));
